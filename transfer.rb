@@ -1,4 +1,4 @@
-require './message_handler'
-require './input_handler'
+require './bin/message_handler'
+require './bin/input_handler'
 
 a = InputHandler.new ARGV, :import
