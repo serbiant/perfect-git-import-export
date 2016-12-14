@@ -74,11 +74,11 @@ class InputHandler
   end
 
   def required_export_keys
-    required_keys << 'input'
+    required_keys << 'output'
   end
 
   def required_import_keys
-    required_keys << 'output'
+    required_keys << 'input'
   end
 
   def parse_arguments(args)
