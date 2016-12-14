@@ -7,4 +7,7 @@ Dir[File.dirname(__FILE__) + '/bin/processors/*.rb'].each {|f| require f }
 
 
 entry_data = InputHandler.new ARGV
-puts entry_data.username
+worker_class = Object.const_get(entry_data.entity.capitalize)
+
+worker = worker_class.new entry_data
+worker.send(entry_data.type)
