@@ -20,12 +20,20 @@ class InputHandler
       :type => %w(import export)
   }
 
-  def initialize(args) #type is :export or :import
+  def initialize(args)
     @arguments = format_arguments(args)
     set_operation_type!
     check_required_fields!
     validate_values!
     @arguments.each { |k, v| instance_variable_set("@#{k}",v)}
+  end
+
+  def export?
+    @type == 'export'
+  end
+
+  def import?
+    @type == 'import'
   end
 
   private
