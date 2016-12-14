@@ -29,4 +29,10 @@ class GithubInteractor
     say 'Successfully saved data.'
   end
 
+  def array_from_json
+    say "Getting data from file #{@input}."
+    data = File.read @input
+    JSON.parse data
+  end
+
 end

@@ -1,4 +1,5 @@
 require 'octokit'
+require 'date'
 require 'json'
 
 Dir[File.dirname(__FILE__) + '/bin/helpers/*.rb'].each {|f| require f }
