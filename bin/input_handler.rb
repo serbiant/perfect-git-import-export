@@ -1,7 +1,8 @@
 class InputHandler
   include MessageHandler
   attr_reader :username, :password, :owner,
-              :repository, :input, :output
+              :repository, :input, :output,
+              :type, :entity
 
   AVAILABLE_ARGUMENTS = {
       :username => %w(u username),
@@ -9,15 +10,42 @@ class InputHandler
       :owner => %w(owner organization own org),
       :repository => %w(r repository),
       :input => %w(i input s source),
-      :output => %w(o output)
+      :output => %w(o output),
+      :entity => %w(entity e),
+      :type => %w(type t)
   }
 
-  def initialize(args, type) #type is :export or :import
-    arguments = format_arguments(args)
-    check_required_fields! arguments, type
+  VALID_VALUES = {
+      :entity => %w(issue milestone label),
+      :type => %w(import export)
+  }
+
+  def initialize(args) #type is :export or :import
+    @arguments = format_arguments(args)
+    set_operation_type!
+    check_required_fields!
+    validate_values!
+    @arguments.each { |k, v| instance_variable_set("@#{k}",v)}
   end
 
   private
+
+  def set_operation_type!
+    fatal :type if @arguments[:type].nil?
+    fatal :type_invalid unless VALID_VALUES[:type].index @arguments[:type]
+    @type = @arguments[:type]
+  end
+
+  def validate_values!
+    @arguments.each do |k, v|
+      next unless VALID_VALUES.has_key? k
+      unless VALID_VALUES[k].include? v
+        say "Invalid value `#{v}` for `#{k}` argument!"
+        say "Valid values: #{ VALID_VALUES[k].join(', ') }."
+        fatal :value_invalid
+      end
+    end
+  end
 
   def format_arguments(args)
     arguments = parse_arguments(args)
@@ -31,9 +59,9 @@ class InputHandler
     formatted_arguments
   end
 
-  def check_required_fields! (args, type)
-    keys = (send "required_#{type}_keys").map!(&:to_sym)
-    missed_arguments = keys - args.keys
+  def check_required_fields!
+    keys = (send "required_#{@type}_keys").map!(&:to_sym)
+    missed_arguments = keys - @arguments.keys
     fatal missed_arguments.first.to_sym if missed_arguments.any?
   end
 
@@ -50,7 +78,7 @@ class InputHandler
   end
 
   def required_keys
-    %w{username password owner repository}
+    %w{username password owner repository entity type}
   end
 
 end
